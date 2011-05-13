@@ -1,28 +1,31 @@
 module KeywordSearch where
 
 import Porter (stem)
+import StopWords (isStopWord)
 
-import Data.Text as T
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
+import qualified Data.Map as M
+import Data.List (foldr)
+import Control.Monad
 
 data Document = Document {
+  filePath :: FilePath ,
   text :: T.Text
 }
 
 -- Index the given document
-index :: Document -> IO ()
+index :: FilePath -> IO ()
 index = undefined
 
--- Given a document, return the indexable words and a frequency occurrence
-indexable :: Document -> [(T.Text,Int)]
-indexable = undefined
+removeStopWords :: [T.Text] -> [T.Text]
+removeStopWords = filter (not . isStopWord)
 
--- Implement the Porter stemming algorithm
-stem :: T.Text -> T.Text
-stem = undefined
-
--- Simple lookup via a map
-filterStopWords :: [T.Text] -> [T.Text]
-filterStopWords = undefined
+-- Given a lump of text, filter out stop words
+getTerms :: T.Text -> M.Map T.Text Int
+getTerms ws = foldr (\word count -> M.insertWith' (+) word 1 count) M.empty filteredWords 
+  where
+    filteredWords = removeStopWords ((T.words . T.toLower) ws)
 
 query :: Query -> IO [Document]
 query = undefined
