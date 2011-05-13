@@ -5,6 +5,16 @@ import qualified Data.Text as T
 
 import Prelude 
 import Control.Arrow ((***))
+import Data.List (isSuffixOf)
+
+foo :: T.Text -> Bool
+foo word = not x
+  where
+    x :: Bool
+    x = T.any p (T.pack "lsz")
+    p :: Char -> Bool
+    p = ((`T.isSuffixOf` word) . T.singleton)
+    
 
 -- Note 'y' is handled separately 
 vowels :: [Char]
@@ -24,7 +34,7 @@ isConsonant str i
       p = T.index str (pred i)
       
 containsVowel :: T.Text -> Bool
-containsVowel = undefined
+containsVowel = undefined -- T.any 
       
 step2 :: T.Text -> T.Text
 step2 x = foldr (\(src,rep) word -> replaceLast src rep word) x step2Stems
