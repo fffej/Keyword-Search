@@ -1,20 +1,12 @@
 module KeywordSearch where
 
+import Porter (stem)
+
 import Data.Text as T
 
 data Document = Document {
   text :: T.Text
 }
-
-consonants :: T.Text
-consonants = T.pack "aeiou"
-
-stem :: T.Text -> T.Text
-stem word | T.length < 3 = word
-          | otherwise = stem' word
-                        
-stem' :: T.Text -> T.Text                         
-stem' = undefined
 
 -- Index the given document
 index :: Document -> IO ()
