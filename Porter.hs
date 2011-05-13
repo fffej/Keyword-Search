@@ -1,4 +1,4 @@
-module Main where
+module Porter where
 
 import Control.Monad
 import Control.Arrow ((***))
@@ -9,7 +9,7 @@ import Data.Text.IO as IO
 
 import qualified Data.Text as T
 
--- DONE
+
 isConsonant :: T.Text -> Int -> Bool
 isConsonant str i
     | c `elem` "aeiou"  = False
@@ -193,5 +193,5 @@ stem s | T.length s < 3 = s
 
 main :: IO ()
 main = do
-    content <- IO.readFile "input.txt"
-    IO.writeFile "output.txt" $ T.unlines $ map stem $ T.lines content
+    content <- IO.readFile "/usr/share/dict/british-english"
+    IO.writeFile "/home/jeff/Desktop/output.txt" $ T.unlines $ map stem $ T.lines content
