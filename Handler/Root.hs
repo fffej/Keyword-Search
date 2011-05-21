@@ -2,6 +2,7 @@
 module Handler.Root where
 
 import FortuneSearch
+import StaticFiles
 
 -- This is a handler function for the GET request method on the RootR
 -- resource pattern. All of your resource patterns are defined in
@@ -14,5 +15,8 @@ getRootR :: Handler RepHtml
 getRootR = do
     defaultLayout $ do
         h2id <- lift newIdent
+        addScriptRemote "https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"
+        addScriptRemote "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
+        addStylesheetRemote "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-darkness/jquery-ui.css"
         setTitle "KeywordSearch homepage"
         addWidget $(widgetFile "homepage")

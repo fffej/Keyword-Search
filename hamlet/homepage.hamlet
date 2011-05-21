@@ -1,2 +1,14 @@
-<h1>Hello
-<h2 ##{h2id}>You do not have Javascript enabled.
+<h1>Fortune Search
+<div class="centeredImage">
+  <img src="@{StaticR images_fortuneCookie_jpg}" style="text-align: center">
+
+<div class="controls">
+  <input id="searchText" class="searchText">
+  <button id="search">Search</button>  
+
+<div class="searchResults">
+
+<hr>
+
+<p>This is just a demonstration of implementing a simple keyword search engine using <a href="http://www.redis.io/">Redis</a>, <a href="http://www.haskell.org/">Haskell</a> and <a href="http://docs.yesodweb.com/">Yesod</a>.  Contact me via <a href="http://www.fatvat.co.uk">my blog</a> or <a href="http://twitter.com/fffej/">Twitter</a> to send abuse.
+

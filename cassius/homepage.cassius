@@ -1,4 +1,18 @@
 h1
     text-align: center
-h2##{h2id}
-    color: #990
+
+.centeredImage
+    text-align: center
+    margin-top: 0px
+    margin-bottom: 0px
+    padding: 0px
+
+.controls
+    text-align: center
+    font-size: 18px
+    
+.searchText
+    border: 1px solid #000000
+    font-size: 18px
+        
+
