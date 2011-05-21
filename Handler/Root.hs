@@ -2,6 +2,7 @@
 module Handler.Root where
 
 import FortuneSearch
+import Search
 import StaticFiles
 
 import Data.Text (Text)
@@ -31,8 +32,10 @@ getSearchR :: Text -> Handler RepJson
 getSearchR search = do
   y <- getYesod
   let r = redis y
-  jsonToRepJson $ jsonList
-         [ jsonScalar $ "foo"
-         , jsonScalar $ "bar"
-         , jsonScalar $ "baz"
-         ]
+  -- TODO Need to parse the query better      
+  key <- liftIO $ query r (Contains search)
+  d <- liftIO $ getQueryResponse r key
+  jsonToRepJson $ jsonList [ jsonScalar $ (show d) ]
+  
+getSearchResults :: Reply T.Text -> [T.Text]  
+getSearchResults r = undefined
