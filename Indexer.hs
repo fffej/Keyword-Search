@@ -1,8 +1,8 @@
 module Indexer (
   Document,
   TermWeights,
-  storeEntry,
-  addDoc,
+  storeTermEntry,
+  addTerms,
   getTerms,
   getTerm) where
 
@@ -27,12 +27,12 @@ data Document = Document {
   text :: T.Text
 }
 
-storeEntry :: Redis -> T.Text -> Int -> FilePath -> IO (Reply T.Text)
-storeEntry r k v ref = zincrBy r k (fromIntegral v) (T.pack ref) 
+storeTermEntry :: Redis -> T.Text -> Int -> FilePath -> IO (Reply T.Text)
+storeTermEntry r k v ref = zincrBy r k (fromIntegral v) (T.pack ref) 
   
-addDoc :: Redis -> String -> TermWeights -> IO ()
-addDoc r ref termWeights = do
-  mapM_ (\(k,v) -> storeEntry r k v ref) (M.toList termWeights)
+addTerms :: Redis -> String -> TermWeights -> IO ()
+addTerms r ref termWeights = do
+  mapM_ (\(k,v) -> storeTermEntry r k v ref) (M.toList termWeights)
   return ()
 
 removeStopWords :: [T.Text] -> [T.Text]

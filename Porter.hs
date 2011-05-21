@@ -1,5 +1,9 @@
 module Porter where
 
+-- Implementation of the Porter stemming algorithm
+-- Heavily based on the sample Haskell implementation 
+-- Available at http://tartarus.org/martin/PorterStemmer/haskell.txt
+
 import Control.Monad
 import Control.Arrow ((***))
 import Data.Maybe
@@ -8,7 +12,6 @@ import Data.List
 import Data.Text.IO as IO
 
 import qualified Data.Text as T
-
 
 isConsonant :: T.Text -> Int -> Bool
 isConsonant str i
@@ -141,7 +144,6 @@ step2Stems = map (T.pack *** T.pack)
              , ("iviti",   "ive" )
              , ("biliti",  "ble" )
              , ("logi",    "log" ) ]
-
 
 step2 :: T.Text -> T.Text
 step2 word = fromMaybe word result

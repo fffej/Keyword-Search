@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-
 module FortuneIndexer (indexFortunes) where
 
-import Indexer (addDoc,getTerms)
+import Indexer (addTerms,getTerms)
 import Control.Monad (forM_)
 
 import qualified Data.Text as T
@@ -21,9 +20,7 @@ indexFortune redis path = do
   let fortunes = (T.splitOn "%" fortunesText)
   let termCounts = map getTerms fortunes
   forM_ (zip fortunes [1..]) (\(fortune,n) -> set redis (path ++ show n) fortune)
-  forM_ (zip termCounts [1..]) (\(terms,n) -> do
-                                   let ref = (path ++ show n)
-                                   addDoc redis ref terms)    
+  forM_ (zip termCounts [1..]) (\(terms,n) -> addTerms redis (path ++ show n) terms)
     
 indexFortunes :: Redis -> IO () 
 indexFortunes r = forM_ fortunes (indexFortune r)
