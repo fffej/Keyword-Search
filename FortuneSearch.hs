@@ -25,14 +25,16 @@ import Control.Monad.Trans.Class (lift)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as T
 import Data.Text (Text)
+import Database.Redis.Redis
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
 -- access to the data present here.
-data FortuneSearch = FortuneSearch
-    { getStatic :: Static -- ^ Settings for static file serving.
-    }
+data FortuneSearch = FortuneSearch { 
+    getStatic :: Static -- ^ Settings for static file serving.
+  , redis :: Redis -- ^ Connection details for Redis
+}
 
 -- | A useful synonym; most of the handler functions in your application
 -- will need to be of this type.

@@ -13,6 +13,7 @@ import Yesod.Helpers.Static
 import Data.ByteString (ByteString)
 import Network.Wai (Application)
 import Data.Dynamic (Dynamic, toDyn)
+import Database.Redis.Redis
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -36,7 +37,8 @@ getRobotsR = return $ RepPlain $ toContent ("User-agent: *" :: ByteString)
 -- migrations handled by Yesod.
 withFortuneSearch :: (Application -> IO a) -> IO a
 withFortuneSearch f = do
-    let h = FortuneSearch s
+    redis <- connect redisHost redisPort
+    let h = FortuneSearch s redis
     toWaiApp h >>= f
   where
     s = static Settings.staticdir

@@ -15,6 +15,8 @@ module Settings
     , approot
     , staticroot
     , staticdir
+    , redisHost
+    , redisPort
     ) where
 
 import qualified Text.Hamlet as H
@@ -45,6 +47,12 @@ approot = "http://localhost:3000"
 -- path. The default value works properly with your scaffolded site.
 staticdir :: FilePath
 staticdir = "static"
+
+redisHost :: String
+redisHost = "localhost"
+
+redisPort :: String
+redisPort = "6379"
 
 -- | The base URL for your static files. As you can see by the default
 -- value, this can simply be "static" appended to your application root.
