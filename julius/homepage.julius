@@ -1,6 +1,8 @@
 $(document).ready(function() {                                                              
     $("button#search").button();
     $("button#search").click(function() {
-        alert($("input#searchText")[0].value);
+        $.getJSON("/search/" + $("input#searchText")[0].value, function(data) {
+            alert(data);
+        });
     });
 });
