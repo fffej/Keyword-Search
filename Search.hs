@@ -5,6 +5,7 @@ import Indexer (getTerm)
 import qualified Data.Text as T
 import Database.Redis.Redis
 import Database.Redis.ByteStringClass
+import Data.Maybe (fromJust)
 
 data Query = Contains T.Text
            | And Query Query
@@ -34,10 +35,20 @@ query r (Contains text) = do
   let searchTerm = getTerm text
   return searchTerm
   
-getQueryResponse :: Redis -> T.Text -> IO [(Int,T.Text)]
+getQueryResponse :: Redis -> T.Text -> IO (Reply T.Text) -- [(Int,T.Text)]
 getQueryResponse r key = do
   resp <- zrange r key (0,99999999) True 
-  return (getScoresAndKey resp)
+  return resp -- (getScoresAndKeys resp)
   
-getScoresAndKey :: BS a => Reply a -> [(Int,T.Text)]  
-getScoresAndKey x = undefined
+getScoresAndKeys :: Reply T.Text -> [(Int,T.Text)]  
+getScoresAndKeys (RMulti (Just x)) = undefined 
+  where
+    strings = (map fromJust x)
+getScoresAndKeys (RMulti Nothing) = []
+getScoresAndKeys _ = []
+  
+                     
+everySecondAt :: Bool -> [a] -> [a]
+everySecondAt _ [] = []
+everySecondAt True  (x : xs) = x : every_second_at False xs
+everySecondAt False (x : xs) =     every_second_at True xs            

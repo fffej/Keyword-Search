@@ -37,5 +37,3 @@ getSearchR search = do
   d <- liftIO $ getQueryResponse r key
   jsonToRepJson $ jsonList [ jsonScalar $ (show d) ]
   
-getSearchResults :: Reply T.Text -> [T.Text]  
-getSearchResults r = undefined
