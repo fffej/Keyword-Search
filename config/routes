@@ -4,3 +4,4 @@
 /robots.txt RobotsR GET
 
 / RootR GET
+/search/#Text SearchR GET

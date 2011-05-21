@@ -4,6 +4,11 @@ module Handler.Root where
 import FortuneSearch
 import StaticFiles
 
+import Data.Text (Text)
+import qualified Data.Text as T
+
+import Yesod.Json
+
 -- This is a handler function for the GET request method on the RootR
 -- resource pattern. All of your resource patterns are defined in
 -- FortuneSearch.hs; look for the line beginning with mkYesodData.
@@ -20,3 +25,12 @@ getRootR = do
         addStylesheetRemote "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-darkness/jquery-ui.css"
         setTitle "KeywordSearch homepage"
         addWidget $(widgetFile "homepage")
+        
+-- TODO Perform the actual search
+getSearchR :: Text -> Handler RepJson         
+getSearchR search = do
+  jsonToRepJson $ jsonList
+         [ jsonScalar $ "foo"
+         , jsonScalar $ "bar"
+         , jsonScalar $ "baz"
+         ]
