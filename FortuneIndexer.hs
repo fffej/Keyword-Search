@@ -15,18 +15,15 @@ fortunes = [ "./fortune/CatV.fortune"
            , "./fortune/Offensive.fortune"
            , "./fortune/KernelNewbies.fortune"]
 
-
-
 indexFortune :: Redis -> FilePath -> IO ()
 indexFortune redis path = do
   fortunesText <- T.readFile path
   let fortunes = (T.splitOn "%" fortunesText)
   let termCounts = map getTerms fortunes
-  forM_ (zip fortunes [1..]) (\(fortune,n) -> do
-                                 set redis (path ++ show n) fortune)
+  forM_ (zip fortunes [1..]) (\(fortune,n) -> set redis (path ++ show n) fortune)
   forM_ (zip termCounts [1..]) (\(terms,n) -> do
                                    let ref = (path ++ show n)
                                    addDoc redis ref terms)    
     
 indexFortunes :: Redis -> IO () 
-indexFortunes r = forM_ fortunes (\x -> indexFortune r x)
+indexFortunes r = forM_ fortunes (indexFortune r)
