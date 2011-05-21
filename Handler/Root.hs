@@ -29,6 +29,8 @@ getRootR = do
 -- TODO Perform the actual search
 getSearchR :: Text -> Handler RepJson         
 getSearchR search = do
+  y <- getYesod
+  let r = redis y
   jsonToRepJson $ jsonList
          [ jsonScalar $ "foo"
          , jsonScalar $ "bar"

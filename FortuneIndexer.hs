@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module FortuneIndexer (indexFortunes) where
+module FortuneIndexer (main) where
 
 import Indexer (addTerms,getTerms)
 import Control.Monad (forM_)
@@ -24,3 +24,10 @@ indexFortune redis path = do
     
 indexFortunes :: Redis -> IO () 
 indexFortunes r = forM_ fortunes (indexFortune r)
+
+-- TODO Should I bother using command line arguments?
+main :: IO ()             
+main = do
+  redis <- connect "localhost" "6379"
+  indexFortunes redis
+  return ()
