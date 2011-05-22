@@ -7,6 +7,7 @@ import Database.Redis.Redis
 import Database.Redis.ByteStringClass
 import Data.Maybe (fromJust)
 import Data.List.Split
+import Control.Monad (liftM)
 
 data Query = Contains T.Text
            | And Query Query
@@ -42,8 +43,8 @@ getQueryResponse r key = do
   x <- fromRMultiBulk' resp
   let scores = map (read . T.unpack . head . tail) (splitEvery 2 x)
       values = map head (splitEvery 2 x)
-      
-  return $ zip scores values
+  v <- mapM (\x -> get r x >>= fromRBulk') values
+  return $ zip scores v
   
   
 
