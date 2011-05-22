@@ -35,4 +35,4 @@ getSearchR search = do
   -- TODO Need to parse the query better      
   key <- liftIO $ query r (Contains search)
   d <- liftIO $ getQueryResponse r key
-  jsonToRepJson $ jsonList [ jsonScalar $ (show d) ]
+  jsonToRepJson $ jsonList (map (jsonScalar . T.unpack) d)

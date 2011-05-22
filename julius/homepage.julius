@@ -2,7 +2,20 @@ $(document).ready(function() {
     $("button#search").button();
     $("button#search").click(function() {
         $.getJSON("/search/" + $("input#searchText")[0].value, function(data) {
-            alert(data);
+            var html = '';
+
+            if (data.length === 0) {
+                html = '<p>No results!</p>';
+            }      
+            else {
+                for (var i=0;i<data.length;++i) {
+                    html += '<p class="searchResult">' + data[i] + '</p>'
+                }     
+            }   
+
+            $("div#searchResults").html("");
+            $("div#searchResults").html(html);
+            
         });
     });
 });

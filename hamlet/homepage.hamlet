@@ -6,7 +6,7 @@
   <input id="searchText" class="searchText">
   <button id="search">Search</button>  
 
-<div class="searchResults">
+<div class="searchResults" id="searchResults">
 
 <hr>
 

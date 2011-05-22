@@ -37,14 +37,13 @@ query r (Contains text) = do
   let searchTerm = getTerm text
   return searchTerm
   
-getQueryResponse :: Redis -> T.Text -> IO [(Int,T.Text)]
+getQueryResponse :: Redis -> T.Text -> IO [T.Text]
 getQueryResponse r key = do
   resp <- zrange r key (0,99999999) True 
   x <- fromRMultiBulk' resp
-  let scores = map (read . T.unpack . head . tail) (splitEvery 2 x)
-      values = map head (splitEvery 2 x)
-  v <- mapM (\x -> get r x >>= fromRBulk') values
-  return $ zip scores v
+  let v = map head (splitEvery 2 x) :: [T.Text]
+  mapM (\x -> get r x >>= fromRBulk') v
+  
   
   
 
