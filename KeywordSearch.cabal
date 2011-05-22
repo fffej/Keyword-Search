@@ -59,4 +59,5 @@ executable         KeywordSearch
                  , wai
                  , warp
                  , blaze-builder
+                 , split
     ghc-options:   -Wall -threaded

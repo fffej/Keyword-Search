@@ -6,6 +6,7 @@ import qualified Data.Text as T
 import Database.Redis.Redis
 import Database.Redis.ByteStringClass
 import Data.Maybe (fromJust)
+import Data.List.Split
 
 data Query = Contains T.Text
            | And Query Query
@@ -35,20 +36,14 @@ query r (Contains text) = do
   let searchTerm = getTerm text
   return searchTerm
   
-getQueryResponse :: Redis -> T.Text -> IO (Reply T.Text) -- [(Int,T.Text)]
+getQueryResponse :: Redis -> T.Text -> IO [(Int,T.Text)]
 getQueryResponse r key = do
   resp <- zrange r key (0,99999999) True 
-  return resp -- (getScoresAndKeys resp)
+  x <- fromRMultiBulk' resp
+  let scores = map (read . T.unpack . head . tail) (splitEvery 2 x)
+      values = map head (splitEvery 2 x)
+      
+  return $ zip scores values
   
-getScoresAndKeys :: Reply T.Text -> [(Int,T.Text)]  
-getScoresAndKeys (RMulti (Just x)) = undefined 
-  where
-    strings = (map fromJust x)
-getScoresAndKeys (RMulti Nothing) = []
-getScoresAndKeys _ = []
   
-                     
-everySecondAt :: Bool -> [a] -> [a]
-everySecondAt _ [] = []
-everySecondAt True  (x : xs) = x : every_second_at False xs
-everySecondAt False (x : xs) =     every_second_at True xs            
+

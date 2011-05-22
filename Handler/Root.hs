@@ -36,4 +36,3 @@ getSearchR search = do
   key <- liftIO $ query r (Contains search)
   d <- liftIO $ getQueryResponse r key
   jsonToRepJson $ jsonList [ jsonScalar $ (show d) ]
-  
