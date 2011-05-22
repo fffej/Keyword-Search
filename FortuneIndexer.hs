@@ -11,7 +11,6 @@ import Database.Redis.Redis
 fortunes :: [FilePath]
 fortunes = [ "./fortune/CatV.fortune"
            , "./fortune/FreeBsd.fortune"
-           , "./fortune/Offensive.fortune"
            , "./fortune/KernelNewbies.fortune"]
 
 indexFortune :: Redis -> FilePath -> IO ()
