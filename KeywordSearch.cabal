@@ -10,7 +10,7 @@ category:          Web
 stability:         Experimental
 cabal-version:     >= 1.6
 build-type:        Simple
-homepage:          http://KeywordSearch.yesodweb.com/
+homepage:          http://fortunesearch.boringtosser.co.uk/
 
 Flag production
     Description:   Build the production executable.
@@ -26,7 +26,7 @@ library
     else
         Buildable: False
     exposed-modules: Controller
-    hs-source-dirs: ., config
+    hs-source-dirs: .
     other-modules:   FortuneSearch
                      Settings
                      StaticFiles
@@ -42,8 +42,8 @@ executable         KeywordSearch
     else
         ghc-options:   -Wall -threaded
 
-    main-is:       config/KeywordSearch.hs
-    hs-source-dirs: ., config
+    main-is:       KeywordSearch.hs
+    hs-source-dirs: .
 
     build-depends: base         >= 4       && < 5
                  , yesod-core   >= 0.8     && < 0.9
@@ -54,10 +54,11 @@ executable         KeywordSearch
                  , text
                  , template-haskell
                  , hamlet
-                 , web-routes
                  , transformers
                  , wai
                  , warp
                  , blaze-builder
                  , split
+                 , redis                
+                 , containers
     ghc-options:   -Wall -threaded

@@ -16,8 +16,7 @@ fortunes = [ "./fortune/CatV.fortune"
 indexFortune :: Redis -> FilePath -> IO ()
 indexFortune redis path = do
   fortunesText <- T.readFile path
-  let fortunes = (T.splitOn "%" fortunesText)
-  let termCounts = map getTerms fortunes
+  let termCounts = map getTerms (T.splitOn "%" fortunesText)
   forM_ (zip fortunes [1..]) (\(fortune,n) -> set redis (path ++ show n) fortune)
   forM_ (zip termCounts [1..]) (\(terms,n) -> addTerms redis (path ++ show n) terms)
     

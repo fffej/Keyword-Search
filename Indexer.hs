@@ -1,5 +1,4 @@
 module Indexer (
-  Document,
   TermWeights,
   storeTermEntry,
   addTerms,
@@ -21,11 +20,6 @@ instance BS T.Text where
   fromBS = decodeUtf8
 
 type TermWeights = M.Map T.Text Int
-
-data Document = Document {
-  filePath :: FilePath ,
-  text :: T.Text
-}
 
 storeTermEntry :: Redis -> T.Text -> Int -> FilePath -> IO (Reply T.Text)
 storeTermEntry r k v ref = zincrBy r k (fromIntegral v) (T.pack ref) 
