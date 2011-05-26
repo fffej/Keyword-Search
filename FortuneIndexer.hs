@@ -1,23 +1,47 @@
 {-# LANGUAGE OverloadedStrings #-}
 module FortuneIndexer (main) where
 
-import Indexer (addTerms,getTerms)
+import Indexer (addTerms,getTerms,isBlank,notBlank)
 import Control.Monad (forM_)
+import Data.List (groupBy)
+import Data.Char (isSpace)
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Database.Redis.Redis
 
-fortunes :: [FilePath]
-fortunes = [ "./fortune/CatV.fortune"
-           , "./fortune/FreeBsd.fortune"
-           , "./fortune/KernelNewbies.fortune"]
+import Debug.Trace
 
-indexFortune :: Redis -> FilePath -> IO ()
-indexFortune redis path = do
+splitOnPercent :: T.Text -> [T.Text]
+splitOnPercent = T.splitOn (T.singleton '%')
+
+splitOnBlankLines :: T.Text -> [T.Text]
+splitOnBlankLines t = map T.unlines filtered
+  where 
+    fileLines :: [T.Text]
+    fileLines = T.lines t
+    
+    groups :: [[T.Text]]
+    groups = groupBy (\x y -> notBlank x && notBlank y) fileLines
+    
+    filtered :: [[T.Text]]
+    filtered = filter (not . isEmpty) groups
+
+isEmpty :: [T.Text] -> Bool
+isEmpty [] = True
+isEmpty (x:_) = isBlank x
+    
+fortunes :: [(FilePath,T.Text -> [T.Text])]
+fortunes = [ ("./fortune/CatV.fortune", splitOnBlankLines)
+           , ("./fortune/FreeBsd.fortune", splitOnPercent)
+           , ("./fortune/KernelNewbies.fortune", splitOnPercent)]
+
+indexFortune :: Redis -> (FilePath,T.Text -> [T.Text]) -> IO ()
+indexFortune redis (path,sep) = do
   fortunesText <- T.readFile path
-  let termCounts = map getTerms (T.splitOn "%" fortunesText)
-  forM_ (zip fortunes [1..]) (\(fortune,n) -> set redis (path ++ show n) fortune)
+  let fortunes' = sep fortunesText
+  let termCounts = map getTerms fortunes'
+  forM_ (zip fortunes' [1..]) (\(fortune,n) -> set redis (path ++ show n) fortune)
   forM_ (zip termCounts [1..]) (\(terms,n) -> addTerms redis (path ++ show n) terms)
     
 indexFortunes :: Redis -> IO () 

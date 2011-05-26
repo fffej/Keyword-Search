@@ -1,6 +1,4 @@
-<h1>Fortune Search
-<div class="centeredImage">
-  <img src="@{StaticR images_fortuneCookie_jpg}" style="text-align: center">
+<h1>Fortune Cookie Search
 
 <div class="controls">
   <input id="searchText" class="searchText">

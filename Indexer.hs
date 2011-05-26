@@ -1,6 +1,8 @@
 module Indexer (
   TermWeights,
   storeTermEntry,
+  isBlank,
+  notBlank,
   addTerms,
   getTerms,
   getTerm) where
@@ -13,13 +15,19 @@ import qualified Data.Text as T
 import Database.Redis.Redis
 import Database.Redis.ByteStringClass
 import Data.Text.Encoding as E
-import Data.Char (isLetter)
+import Data.Char (isLetter,isSpace)
 
 instance BS T.Text where
   toBS = encodeUtf8
   fromBS = decodeUtf8
 
 type TermWeights = M.Map T.Text Int
+
+isBlank :: T.Text -> Bool    
+isBlank = T.all isSpace    
+
+notBlank :: T.Text -> Bool
+notBlank = not . isBlank
 
 storeTermEntry :: Redis -> T.Text -> Int -> FilePath -> IO (Reply T.Text)
 storeTermEntry r k v ref = zincrBy r k (fromIntegral v) (T.pack ref) 
@@ -38,7 +46,8 @@ clean = T.filter isLetter
 getTerms :: T.Text -> TermWeights
 getTerms ws = foldr (\word count -> M.insertWith' (+) word 1 count) M.empty filteredWords 
   where
-    filteredWords = map stem $ removeStopWords (map clean ((T.words . T.toLower) ws))
+    filteredWords = filter notBlank stemmedWords  
+    stemmedWords = map stem $ removeStopWords (map clean ((T.words . T.toLower) ws))
 
 getTerm :: T.Text -> T.Text
 getTerm = stem . clean . T.toLower

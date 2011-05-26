@@ -1,4 +1,8 @@
+body 
+    background-color: #FFFFFF
+
 h1
+    font-size: 3em
     text-align: center
 
 .centeredImage
@@ -9,10 +13,15 @@ h1
 
 .controls
     text-align: center
-    font-size: 18px
+    font-size: 1.5em
     
 .searchText
     border: 1px solid #000000
-    font-size: 18px
-        
+    font-size: 1.5em
 
+.searchResults
+    font-family: 'Courier', Sans-Serif
+    margin: 50 50 50 50        
+
+.searchResult
+    padding: 3 3 3 3
