@@ -1,4 +1,8 @@
-module Search where
+module Search (
+    getQueryResponse
+  , parseQuery
+  , query 
+  ) where
 
 import Indexer (getTerm)
 
@@ -6,12 +10,15 @@ import qualified Data.Text as T
 import Database.Redis.Redis
 import Data.List.Split (splitEvery)
 
+import Data.Either (either)
+
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Combinator 
 import Text.ParserCombinators.Parsec.Char
 import Text.ParserCombinators.Parsec.Expr
 import Text.ParserCombinators.Parsec.Token  
 import Text.ParserCombinators.Parsec.Language 
+import Text.ParserCombinators.Parsec.Error
 
 data Query = Contains T.Text
            | And Query Query
@@ -38,14 +45,26 @@ table :: OperatorTable Char () Query
 table = [[binary "and" And AssocLeft, binary "or" Or AssocLeft]]
         
 binary :: String -> (a -> a -> a) -> Assoc -> Operator Char () a    
-binary name fun assoc = Infix (do{ m_reserved name; return fun }) assoc      
+binary name fun = Infix (do{ m_reserved name; return fun }) 
         
 term = m_parens queryParser
-       <|> fmap mkContains m_identifier
+       <|> fmap mkImplicitOr (many1 m_identifier)
        <?> "query term"
 
-mkContains :: String -> Query
-mkContains = Contains . T.pack
+mkImplicitOr :: [String] -> Query
+mkImplicitOr xs = foldl1 Or $ map (Contains . T.pack) xs
+
+parseQuery :: String -> Either String Query
+parseQuery q = either processError (Right . id) x
+  where
+    x = parse queryParser "http" q
+    
+processError :: ParseError -> Either String Query    
+processError p = Left (concatMap messageString $ errorMessages p)
+    
+isLeft :: Either a b -> Bool
+isLeft (Left x) = True
+isLeft _ = False
 
 getKey :: Query -> T.Text      
 getKey = T.pack . show

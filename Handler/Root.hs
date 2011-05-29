@@ -31,8 +31,9 @@ getRootR = do
 getSearchR :: Text -> Handler RepJson         
 getSearchR search = do
   y <- getYesod
-  let r = redis y
-  -- TODO Need to parse the query better      
-  key <- liftIO $ query r (parseQuery search)
-  d <- liftIO $ getQueryResponse r key
-  jsonToRepJson $ jsonList (map (jsonScalar . T.unpack) d)
+  case (parseQuery (T.unpack search)) of
+    (Left errorMessage) -> jsonToRepJson $ jsonScalar (show errorMessage)
+    (Right qry) -> do
+      key <- liftIO $ query (redis y) qry
+      d <- liftIO $ getQueryResponse (redis y) key
+      jsonToRepJson $ jsonList (map (jsonScalar . T.unpack) d)
