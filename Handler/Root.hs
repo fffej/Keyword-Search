@@ -33,6 +33,6 @@ getSearchR search = do
   y <- getYesod
   let r = redis y
   -- TODO Need to parse the query better      
-  key <- liftIO $ query r (Contains search)
+  key <- liftIO $ query r (parseQuery search)
   d <- liftIO $ getQueryResponse r key
   jsonToRepJson $ jsonList (map (jsonScalar . T.unpack) d)
