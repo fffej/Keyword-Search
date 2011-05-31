@@ -80,6 +80,6 @@ query _ (Contains text) = return (getTerm text)
   
 getQueryResponse :: Redis -> T.Text -> IO [T.Text]
 getQueryResponse r key = do
-  x <- zrange r key (0,99999999) True >>= fromRMultiBulk'
+  x <- zrevrange r key (0,99999999) True >>= fromRMultiBulk'
   let v = map head (splitEvery 2 x) :: [T.Text]
   mapM (\z -> get r z >>= fromRBulk') v   
