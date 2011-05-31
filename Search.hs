@@ -22,6 +22,9 @@ data Query = Contains T.Text
            | Or Query Query
            deriving (Show,Eq,Read)
                     
+-- Just a synonym to keep the type signatures from becoming unwieldy
+type ZSetStoreFunc = Redis -> T.Text -> [T.Text] -> [Double] -> Aggregate -> IO (Reply Int)
+                    
 -- http://www.haskell.org/haskellwiki/Parsing_expressions_and_statements
 -- provides most of the boiler plate in easy to understand form
 queryLang :: LanguageDef st                    
@@ -59,7 +62,7 @@ parseQuery q = either processError (Right . id) x
 processError :: ParseError -> Either String Query    
 processError p = Left (concatMap messageString $ errorMessages p)
                  
-binaryOp :: Redis -> T.Text -> Query -> Query -> (Redis -> T.Text -> [T.Text] -> [a1] -> Aggregate -> IO a)-> IO T.Text
+binaryOp :: Redis -> T.Text -> Query -> Query -> ZSetStoreFunc -> IO T.Text
 binaryOp r key lhs rhs op = do
   args <- mapM (query r) [lhs,rhs]
   cachedKey <- expire r key 30 >>= fromRInt
