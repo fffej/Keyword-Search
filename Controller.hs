@@ -38,10 +38,9 @@ getRobotsR = return $ RepPlain $ toContent ("User-agent: *" :: ByteString)
 withFortuneSearch :: (Application -> IO a) -> IO a
 withFortuneSearch f = do
     redisConn <- connect redisHost redisPort
+    s <- static "/" staticdir
     let h = FortuneSearch s redisConn
     toWaiApp h >>= f
-  where
-    s = static Settings.staticdir
 
 withDevelApp :: Dynamic
 withDevelApp = toDyn (withFortuneSearch :: (Application -> IO ()) -> IO ())
