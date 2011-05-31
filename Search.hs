@@ -59,11 +59,10 @@ processError :: ParseError -> Either String Query
 processError p = Left (concatMap messageString $ errorMessages p)
     
                  
-binaryOp :: Redis -> Query -> Query -> Query -> (Redis -> T.Text -> [T.Text] -> [a1] -> Aggregate -> IO a)-> IO T.Text
-binaryOp r q lhs rhs op = do
+binaryOp :: Redis -> T.Text -> Query -> Query -> (Redis -> T.Text -> [T.Text] -> [a1] -> Aggregate -> IO a)-> IO T.Text
+binaryOp r key lhs rhs op = do
   lhs' <- query r lhs
   rhs' <- query r rhs
-  let key = getKey q
   _ <- op r key [lhs',rhs'] [] SUM
   _ <- expire r key 30
   return key
@@ -72,8 +71,8 @@ getKey :: Query -> T.Text
 getKey = T.pack . show
 
 query :: Redis -> Query -> IO T.Text
-query r q@(And lhs rhs) = binaryOp r q lhs rhs zinterStore
-query r q@(Or lhs rhs) = binaryOp r q lhs rhs zunionStore
+query r q@(And lhs rhs) = binaryOp r (getKey q) lhs rhs zinterStore
+query r q@(Or lhs rhs) = binaryOp r (getKey q) lhs rhs zunionStore
 query _ (Contains text) = return (getTerm text)
   
 getQueryResponse :: Redis -> T.Text -> IO [T.Text]
