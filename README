@@ -1,0 +1,3 @@
+This is just a simple lump of code to learn how to write a keywrod search engine.  It uses Redis as the key/value store and is written in Haskell.
+
+It's not very exciting!

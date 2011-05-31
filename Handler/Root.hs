@@ -3,7 +3,6 @@ module Handler.Root where
 
 import FortuneSearch
 import Search
-import StaticFiles
 
 import Data.Text (Text)
 import qualified Data.Text as T

@@ -37,8 +37,8 @@ getRobotsR = return $ RepPlain $ toContent ("User-agent: *" :: ByteString)
 -- migrations handled by Yesod.
 withFortuneSearch :: (Application -> IO a) -> IO a
 withFortuneSearch f = do
-    redis <- connect redisHost redisPort
-    let h = FortuneSearch s redis
+    redisConn <- connect redisHost redisPort
+    let h = FortuneSearch s redisConn
     toWaiApp h >>= f
   where
     s = static Settings.staticdir

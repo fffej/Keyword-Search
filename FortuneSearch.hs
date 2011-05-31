@@ -19,7 +19,6 @@ import qualified Settings
 import System.Directory
 import qualified Data.ByteString.Lazy as L
 import Settings (hamletFile, cassiusFile, juliusFile, widgetFile)
-import StaticFiles
 import Control.Monad (unless)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.IO.Class (liftIO)
