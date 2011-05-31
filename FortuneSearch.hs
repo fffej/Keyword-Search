@@ -91,6 +91,6 @@ instance Yesod FortuneSearch where
         let statictmp = Settings.staticdir ++ "/tmp/"
         liftIO $ createDirectoryIfMissing True statictmp
         let fn' = statictmp ++ fn
-        exists <- liftIO $ doesFileExist fn'
-        unless exists $ liftIO $ L.writeFile fn' content
+        exists' <- liftIO $ doesFileExist fn'
+        unless exists' $ liftIO $ L.writeFile fn' content
         return $ Just $ Right (StaticR $ StaticRoute ["tmp", T.pack fn] [], [])
