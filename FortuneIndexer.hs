@@ -10,8 +10,6 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Database.Redis.Redis
 
-import Debug.Trace
-
 splitOnPercent :: T.Text -> [T.Text]
 splitOnPercent = T.splitOn (T.singleton '%')
 
@@ -47,7 +45,6 @@ indexFortune redis (path,sep) = do
 indexFortunes :: Redis -> IO () 
 indexFortunes r = forM_ fortunes (indexFortune r)
 
--- TODO Should I bother using command line arguments?
 main :: IO ()             
 main = do
   redis <- connect "localhost" "6379"

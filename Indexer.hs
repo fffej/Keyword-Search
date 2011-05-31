@@ -32,9 +32,7 @@ storeTermEntry :: Redis -> T.Text -> Int -> FilePath -> IO (Reply T.Text)
 storeTermEntry r k v ref = zincrBy r k (fromIntegral v) (T.pack ref) 
   
 addTerms :: Redis -> String -> WordWeights -> IO ()
-addTerms r ref wordWeights = do
-  mapM_ (\(k,v) -> storeTermEntry r k v ref) (M.toList wordWeights)
-  return ()
+addTerms r ref wordWeights = mapM_ (\(k,v) -> storeTermEntry r k v ref) (M.toList wordWeights)
 
 removeStopWords :: [T.Text] -> [T.Text]
 removeStopWords = filter (not . isStopWord)

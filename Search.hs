@@ -72,6 +72,7 @@ binaryOp r key lhs rhs op = do
 getKey :: Query -> T.Text      
 getKey = T.pack . show
 
+-- Returns the key that contains the answer to the query
 query :: Redis -> Query -> IO T.Text
 query r q@(And lhs rhs) = binaryOp r (getKey q) lhs rhs zinterStore
 query r q@(Or lhs rhs) = binaryOp r (getKey q) lhs rhs zunionStore
@@ -79,10 +80,6 @@ query _ (Contains text) = return (getTerm text)
   
 getQueryResponse :: Redis -> T.Text -> IO [T.Text]
 getQueryResponse r key = do
-  resp <- zrange r key (0,99999999) True 
-  x <- fromRMultiBulk' resp
+  x <- zrange r key (0,99999999) True >>= fromRMultiBulk'
   let v = map head (splitEvery 2 x) :: [T.Text]
-  mapM (\z -> get r z >>= fromRBulk') v
-  
-  
-  
+  mapM (\z -> get r z >>= fromRBulk') v   
