@@ -9,6 +9,7 @@ import Indexer (getTerm)
 import qualified Data.Text as T
 import Database.Redis.Redis
 import Data.List.Split (splitEvery)
+import Control.Monad (when)
 
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Expr
@@ -53,18 +54,16 @@ mkImplicitOr xs = foldl1 Or $ map (Contains . T.pack) xs
 parseQuery :: String -> Either String Query
 parseQuery q = either processError (Right . id) x
   where
-    x = parse queryParser "http" q
+    x = parse queryParser "Web Request" q
     
 processError :: ParseError -> Either String Query    
 processError p = Left (concatMap messageString $ errorMessages p)
-    
                  
 binaryOp :: Redis -> T.Text -> Query -> Query -> (Redis -> T.Text -> [T.Text] -> [a1] -> Aggregate -> IO a)-> IO T.Text
 binaryOp r key lhs rhs op = do
-  lhs' <- query r lhs
-  rhs' <- query r rhs
-  _ <- op r key [lhs',rhs'] [] SUM
-  _ <- expire r key 30
+  args <- mapM (query r) [lhs,rhs]
+  cachedKey <- expire r key 30 >>= fromRInt
+  when (cachedKey == 0) (op r key args [] SUM >> expire r key 30 >> return ())
   return key
 
 getKey :: Query -> T.Text      
