@@ -1,5 +1,4 @@
 module Indexer (
-  TermWeights,
   storeTermEntry,
   isBlank,
   notBlank,
@@ -21,7 +20,7 @@ instance BS T.Text where
   toBS = encodeUtf8
   fromBS = decodeUtf8
 
-type TermWeights = M.Map T.Text Int
+type WordWeights = M.Map T.Text Int
 
 isBlank :: T.Text -> Bool    
 isBlank = T.all isSpace    
@@ -32,9 +31,9 @@ notBlank = not . isBlank
 storeTermEntry :: Redis -> T.Text -> Int -> FilePath -> IO (Reply T.Text)
 storeTermEntry r k v ref = zincrBy r k (fromIntegral v) (T.pack ref) 
   
-addTerms :: Redis -> String -> TermWeights -> IO ()
-addTerms r ref termWeights = do
-  mapM_ (\(k,v) -> storeTermEntry r k v ref) (M.toList termWeights)
+addTerms :: Redis -> String -> WordWeights -> IO ()
+addTerms r ref wordWeights = do
+  mapM_ (\(k,v) -> storeTermEntry r k v ref) (M.toList wordWeights)
   return ()
 
 removeStopWords :: [T.Text] -> [T.Text]
@@ -43,7 +42,7 @@ removeStopWords = filter (not . isStopWord)
 clean :: T.Text -> T.Text
 clean = T.filter isLetter
 
-getTerms :: T.Text -> TermWeights
+getTerms :: T.Text -> WordWeights
 getTerms ws = foldr (\word count -> M.insertWith' (+) word 1 count) M.empty filteredWords 
   where
     filteredWords = filter notBlank stemmedWords  

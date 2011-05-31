@@ -45,7 +45,7 @@ table :: OperatorTable Char () Query
 table = [[binary "and" And AssocLeft, binary "or" Or AssocLeft]]
         
 binary :: String -> (a -> a -> a) -> Assoc -> Operator Char () a    
-binary name fun = Infix (do{ m_reserved name; return fun }) 
+binary name fun = Infix (m_reserved name >> return fun) 
         
 term = m_parens queryParser
        <|> fmap mkImplicitOr (many1 m_identifier)
