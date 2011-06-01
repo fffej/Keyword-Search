@@ -8,5 +8,5 @@
 
 <hr>
 
-<p>This is just a demonstration of implementing a simple keyword search engine using <a href="http://www.redis.io/">Redis</a>, <a href="http://www.haskell.org/">Haskell</a> and <a href="http://docs.yesodweb.com/">Yesod</a>.  Contact me via <a href="http://www.fatvat.co.uk">my blog</a> or <a href="http://twitter.com/fffej/">Twitter</a> to send abuse.
+<p>A simple keyword search engine using <a href="http://www.redis.io/">Redis</a>, <a href="http://www.haskell.org/">Haskell</a> and <a href="http://docs.yesodweb.com/">Yesod</a>.  Contact me via <a href="http://www.fatvat.co.uk">my blog</a> or <a href="http://twitter.com/fffej/">Twitter</a> to send abuse.  Data taken from <a href="http://fortunes.cat-v.org/">Jar of Fortunes</a>
 
