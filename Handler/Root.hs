@@ -23,7 +23,8 @@ getRootR = do
         addScriptRemote "https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"
         addScriptRemote "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
         addStylesheetRemote "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-darkness/jquery-ui.css"
-        setTitle "KeywordSearch homepage"
+        setTitle "Awesome Fortune Cookie Search"
+        addWidget $(widgetFile "analytics")
         addWidget $(widgetFile "homepage")
         
 -- TODO Perform the actual search
