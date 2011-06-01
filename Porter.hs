@@ -1,15 +1,13 @@
-module Porter where
+{-# LANGUAGE OverloadedStrings #-}
+module Porter (stem) where
 
 -- Implementation of the Porter stemming algorithm
 -- Heavily based on the sample Haskell implementation 
 -- Available at http://tartarus.org/martin/PorterStemmer/haskell.txt
 
-import Control.Monad
-import Control.Arrow ((***))
-import Data.Maybe
-import Data.List
-
-import Data.Text.IO as IO
+import Control.Monad (msum,mplus)
+import Data.Maybe (fromMaybe)
+import Data.List (group)
 
 import qualified Data.Text as T
 
@@ -72,7 +70,7 @@ measureGT :: Int -> T.Text -> Bool
 measureGT = flip ((>) . measure)
 
 endings :: [(T.Text,T.Text)]
-endings = map (T.pack *** T.pack) [("sses", "ss"), ("ies",  "i"), ("ss", "ss"), ("s", "")]
+endings = [("sses", "ss"), ("ies",  "i"), ("ss", "ss"), ("s", "")]
 
 step1a :: T.Text -> T.Text
 step1a word = fromMaybe word result
@@ -84,17 +82,17 @@ beforeStep1b word = fromMaybe (Left word) result
        cond23 x = do { v <- x; either (const Nothing) (return . Right) v }
        cond1  x = do { v <- x; return (Left v) }
        result =
-           cond1  (replaceEnd (measureGT 0)  word (T.pack "eed") (T.pack "ee")) `mplus`
-           cond23 (statefulReplace containsVowel word (T.pack "ed") T.empty ) `mplus`
-           cond23 (statefulReplace containsVowel word (T.pack "ing") T.empty )
+           cond1  (replaceEnd (measureGT 0)  word "eed" "ee") `mplus`
+           cond23 (statefulReplace containsVowel word "ed" "") `mplus`
+           cond23 (statefulReplace containsVowel word "ing" "")
 
 izeEndings :: [(T.Text,T.Text)]
-izeEndings = map (T.pack *** T.pack) [("at", "ate"), ("bl", "ble"), ("iz", "ize")]
+izeEndings = [("at", "ate"), ("bl", "ble"), ("iz", "ize")]
 
 afterStep1b :: T.Text -> T.Text
 afterStep1b word = fromMaybe word result
     where
-        double        = endsWithDouble word && not (T.any ((`T.isSuffixOf` word) . T.singleton) (T.pack "lsz"))
+        double        = endsWithDouble word && not (T.any ((`T.isSuffixOf` word) . T.singleton) "lsz")
         mEq1AndCvc    = measure word == 1 && cvc word
         iif cond val  = if cond then Just val else Nothing
         result        = findStem (const True) word izeEndings
@@ -112,8 +110,7 @@ step1 :: T.Text -> T.Text
 step1 = step1c . step1b . step1a
 
 step3Stems :: [(T.Text,T.Text)]    
-step3Stems = map (T.pack *** T.pack)
-             [ ("icate", "ic")
+step3Stems = [ ("icate", "ic")
              , ("ative", ""  )
              , ("alize", "al")
              , ("iciti", "ic")
@@ -122,8 +119,7 @@ step3Stems = map (T.pack *** T.pack)
              , ("ness" , ""  ) ]
 
 step2Stems :: [(T.Text,T.Text)]
-step2Stems = map (T.pack *** T.pack)
-             [ ("ational", "ate" )
+step2Stems = [ ("ational", "ate" )
              , ("tional",  "tion")
              , ("enci",    "ence")
              , ("anci",    "ance")
@@ -156,32 +152,32 @@ step3 word = fromMaybe word result
        result = findStem (measureGT 0) word step3Stems
 
 step4gt1 :: [T.Text]
-step4gt1 = map T.pack ["al", "ance", "ence", "er", "ic", "able", "ible", "ant", "ement", "ment", "ent"]
+step4gt1 = ["al", "ance", "ence", "er", "ic", "able", "ible", "ant", "ement", "ment", "ent"]
 
 step4gt2 :: [T.Text]
-step4gt2 = map T.pack  ["ou", "ism", "ate", "iti", "ous", "ive", "ize"]
+step4gt2 = ["ou", "ism", "ate", "iti", "ous", "ive", "ize"]
 
 
 step4 :: T.Text -> T.Text
 step4 word = fromMaybe word result
     where
-        gt1andST str = measureGT 1 str && T.any ((`T.isSuffixOf` str) . T.singleton) (T.pack "st")
+        gt1andST str = measureGT 1 str && T.any ((`T.isSuffixOf` str) . T.singleton) "st"
         findGT1      = findStem (measureGT 1) word . map (flip (,) T.empty)
         result       = findGT1 step4gt1 `mplus`
-                       findStem gt1andST word [(T.pack "ion",T.empty)] `mplus`
+                       findStem gt1andST word [("ion","")] `mplus`
                        findGT1 step4gt2
 
 step5a :: T.Text -> T.Text
 step5a word = fromMaybe word result
     where
         test str = measureGT 1 str || ((measure str == 1) && not (cvc str))
-        result   = replaceEnd test word (T.singleton 'e') T.empty
+        result   = replaceEnd test word "e" ""
 
 step5b :: T.Text -> T.Text
 step5b word = fromMaybe word result
     where
        cond s = T.last s == 'l' && measureGT 1 s
-       result = replaceEnd cond word (T.singleton 'l') T.empty
+       result = replaceEnd cond word "l" ""
 
 step5 :: T.Text -> T.Text
 step5 = step5b . step5a
@@ -192,8 +188,3 @@ allSteps = step5 . step4 . step3 . step2 . step1
 stem :: T.Text -> T.Text
 stem s | T.length s < 3 = s
        | otherwise    = allSteps s
-
-main :: IO ()
-main = do
-    content <- IO.readFile "/usr/share/dict/british-english"
-    IO.writeFile "/home/jeff/Desktop/output.txt" $ T.unlines $ map stem $ T.lines content
