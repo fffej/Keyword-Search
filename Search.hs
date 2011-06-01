@@ -4,7 +4,7 @@ module Search (
   , query 
   ) where
 
-import Indexer (getTerm)
+import FortuneIndexer (getTerm)
 
 import qualified Data.Text as T
 import Database.Redis.Redis
