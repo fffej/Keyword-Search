@@ -1,34 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 module FortuneIndexer (main) where
 
-import Indexer (addTerms,getTerms,isBlank,notBlank)
+import Indexer (addTerms,getTerms)
 import Control.Monad (forM_)
-import Data.List (groupBy)
-import Data.Char (isSpace)
+import Data.List.Split (splitOn)
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Database.Redis.Redis (Redis,connect,set)
 
 splitOnPercent :: T.Text -> [T.Text]
-splitOnPercent = T.splitOn (T.singleton '%')
+splitOnPercent = T.splitOn "%"
 
 splitOnBlankLines :: T.Text -> [T.Text]
-splitOnBlankLines t = map T.unlines filtered
-  where 
-    fileLines :: [T.Text]
-    fileLines = T.lines t
-    
-    groups :: [[T.Text]]
-    groups = groupBy (\x y -> notBlank x && notBlank y) fileLines
-    
-    filtered :: [[T.Text]]
-    filtered = filter (not . isEmpty) groups
-
-isEmpty :: [T.Text] -> Bool
-isEmpty [] = True
-isEmpty (x:_) = isBlank x
-    
+splitOnBlankLines t = (init . map T.concat) (splitOn [" "] (T.lines t))
+  
 fortunes :: [(FilePath,T.Text -> [T.Text])]
 fortunes = [ ("./fortune/CatV.fortune", splitOnBlankLines)
            , ("./fortune/FreeBsd.fortune", splitOnPercent)
