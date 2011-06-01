@@ -8,7 +8,7 @@ import Data.Char (isSpace)
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Database.Redis.Redis
+import Database.Redis.Redis (Redis,connect,set)
 
 splitOnPercent :: T.Text -> [T.Text]
 splitOnPercent = T.splitOn (T.singleton '%')

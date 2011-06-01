@@ -11,8 +11,8 @@ import StopWords
 
 import qualified Data.Map as M
 import qualified Data.Text as T
-import Database.Redis.Redis
-import Database.Redis.ByteStringClass
+import Database.Redis.Redis(Redis,Reply,zincrBy)
+import Database.Redis.ByteStringClass (BS,toBS,fromBS)
 import Data.Text.Encoding as E
 import Data.Char (isLetter,isSpace)
 

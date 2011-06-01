@@ -13,7 +13,7 @@ import Yesod.Helpers.Static
 import Data.ByteString (ByteString)
 import Network.Wai (Application)
 import Data.Dynamic (Dynamic, toDyn)
-import Database.Redis.Redis
+import Database.Redis.Redis (connect)
 
 -- Import all relevant handler modules here.
 import Handler.Root
