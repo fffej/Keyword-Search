@@ -32,7 +32,4 @@ indexFortunes :: Redis -> IO ()
 indexFortunes r = forM_ fortunes (indexFortune r)
 
 main :: IO ()             
-main = do
-  redis <- connect "localhost" "6379"
-  indexFortunes redis
-  return ()
+main = connect "localhost" "6379" >>= indexFortunes
