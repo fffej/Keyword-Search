@@ -8,6 +8,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 
 import Yesod.Json
+import Data.Pool (withResource)
 
 -- This is a handler function for the GET request method on the RootR
 -- resource pattern. All of your resource patterns are defined in
@@ -27,13 +28,11 @@ getRootR = do
         addWidget $(widgetFile "analytics")
         addWidget $(widgetFile "homepage")
         
--- TODO Perform the actual search
 getSearchR :: Text -> Handler RepJson         
 getSearchR search = do
   y <- getYesod
   case (parseQuery (T.unpack search)) of
     (Left errorMessage) -> jsonToRepJson $ jsonScalar (show errorMessage)
     (Right qry) -> do
-      key <- liftIO $ query (redis y) qry
-      d <- liftIO $ getQueryResponse (redis y) key
+      d <- liftIO $ withResource (pool y) (\x -> query x qry >>= (getQueryResponse x))
       jsonToRepJson $ jsonList (map (jsonScalar . T.unpack) d)

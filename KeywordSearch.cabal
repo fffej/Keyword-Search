@@ -63,4 +63,5 @@ executable         KeywordSearch
                  , containers
                  , yesod-json
                  , parsec      >= 3
+                 , resource-pool
     ghc-options:   -Wall -threaded

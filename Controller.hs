@@ -13,7 +13,8 @@ import Yesod.Helpers.Static
 import Data.ByteString (ByteString)
 import Network.Wai (Application)
 import Data.Dynamic (Dynamic, toDyn)
-import Database.Redis.Redis (connect)
+import Database.Redis.Redis (connect,disconnect)
+import Data.Pool (createPool)
 
 -- Import all relevant handler modules here.
 import Handler.Root
@@ -37,9 +38,9 @@ getRobotsR = return $ RepPlain $ toContent ("User-agent: *" :: ByteString)
 -- migrations handled by Yesod.
 withFortuneSearch :: (Application -> IO a) -> IO a
 withFortuneSearch f = do
-    redisConn <- connect redisHost redisPort
+    pool <- createPool (connect redisHost redisPort) disconnect 1 120 4
     s <- static "/" staticdir
-    let h = FortuneSearch s redisConn
+    let h = FortuneSearch s pool
     toWaiApp h >>= f
 
 withDevelApp :: Dynamic

@@ -25,6 +25,7 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as T
 import Data.Text (Text)
 import Database.Redis.Redis (Redis)
+import Data.Pool
 
 -- | The site argument for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -32,7 +33,7 @@ import Database.Redis.Redis (Redis)
 -- access to the data present here.
 data FortuneSearch = FortuneSearch { 
     getStatic :: Static -- ^ Settings for static file serving.
-  , redis :: Redis -- ^ Connection details for Redis
+  , pool :: Pool Redis -- ^ Connection details for Redis
 }
 
 -- | A useful synonym; most of the handler functions in your application
