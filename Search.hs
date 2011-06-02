@@ -1,5 +1,5 @@
 module Search (
-    getQueryResponse
+    getKeyValues
   , parseQuery
   , query 
   ) where
@@ -78,8 +78,8 @@ query r q@(And lhs rhs) = binaryOp r (getKey q) lhs rhs zinterStore
 query r q@(Or lhs rhs) = binaryOp r (getKey q) lhs rhs zunionStore
 query _ (Contains text) = return (getTerm text)
   
-getQueryResponse :: Redis -> T.Text -> IO [T.Text]
-getQueryResponse r key = do
+getKeyValues :: Redis -> T.Text -> IO [T.Text]
+getKeyValues r key = do
   x <- zrevrange r key (0,99999999) True >>= fromRMultiBulk'
   let v = map head (splitEvery 2 x) :: [T.Text]
   mapM (\z -> get r z >>= fromRBulk') v   

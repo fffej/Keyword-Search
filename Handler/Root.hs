@@ -34,5 +34,5 @@ getSearchR search = do
   case (parseQuery (T.unpack search)) of
     (Left errorMessage) -> jsonToRepJson $ jsonScalar (show errorMessage)
     (Right qry) -> do
-      d <- liftIO $ withResource (pool y) (\x -> query x qry >>= (getQueryResponse x))
+      d <- liftIO $ withResource (pool y) (\x -> query x qry >>= (getKeyValues x))
       jsonToRepJson $ jsonList (map (jsonScalar . T.unpack) d)
